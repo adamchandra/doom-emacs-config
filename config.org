@@ -1,6 +1,6 @@
 #+title: Doom Emacs Configuration
 #+subtitle: The Methods, Management, and Menagerie of Madness
-#+author: tecosaur
+#+author: saunders 
 #+date: {{{modification-time(%Y-%m-%d %H:%M, t)}}} ;{{{timezone}}}, {{{git-rev}}}
 #+macro: timezone (eval (substring (shell-command-to-string "date +%Z") 0 -1))
 #+macro: git-rev (eval (format "@@html:<a href=\"https://github.com/tecosaur/emacs-config/commit/%1$s\" style=\"text-decoration: none\"><code style=\"padding: 0; color: var(--text-light); font-size: inherit; opacity: 0.7\">%1$s</code></a>@@@@latex:\\href{https://github.com/tecosaur/emacs-config/commit/%1$s}{%1$s}@@" (substring (shell-command-to-string "git rev-parse --short HEAD") 0 -1)))
@@ -581,7 +581,7 @@ grammar                      ; tasing grammar mistake every you make
 #+name: doom-tools
 #+begin_src emacs-lisp
 ansible                      ; a crucible for infrastructure as code
-debugger                     ; FIXME stepping through code, to help you add bugs
+;;debugger                     ; FIXME stepping through code, to help you add bugs
 ;;direnv                     ; be direct about your environment
 ;;docker                     ; port everything to containers
 ;;editorconfig               ; let someone else argue about tabs vs spaces
@@ -677,7 +677,7 @@ markdown                     ; writing docs for people to ignore
 ;;rst                        ; ReST in peace
 ;;(ruby +rails)              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
 (rust +lsp)                  ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
-;;scala                      ; java, but good
+scala                        ; java, but good
 scheme                       ; a fully conniving family of lisps
 sh                           ; she sells {ba,z,fi}sh shells on the C xor
 ;;sml                        ; no, the /other/ ML
@@ -694,7 +694,7 @@ I couldn't resist the Email and Feed modules.
 
 #+name: doom-email
 #+begin_src emacs-lisp
-(mu4e +org +gmail)
+;;(mu4e +org +gmail)
 ;;notmuch
 ;;(wanderlust +gmail)
 #+end_src
@@ -702,8 +702,8 @@ I couldn't resist the Email and Feed modules.
 #+name: doom-app
 #+begin_src emacs-lisp
 ;;calendar
-irc                          ; how neckbeards socialize
-(rss +org)                   ; emacs as an RSS reader
+;;irc                          ; how neckbeards socialize
+;;(rss +org)                   ; emacs as an RSS reader
 ;;twitter                    ; twitter client https://twitter.com/vnought
 #+end_src
 
@@ -716,8 +716,8 @@ aspects are nice, but on others I prefer Fira.
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "JetBrains Mono" :size 24)
       doom-big-font (font-spec :family "JetBrains Mono" :size 36)
-      doom-variable-pitch-font (font-spec :family "Overpass" :size 24)
-      doom-serif-font (font-spec :family "IBM Plex Mono" :weight 'light))
+      doom-variable-pitch-font (font-spec :family "Ubuntu" :size 24)
+      doom-serif-font (font-spec :family "Bitstream Vera Sans" :weight 'light))
 #+end_src
 
 #+attr_html: :class invertible :alt Screenshot of the fonts within Emacs.
@@ -727,7 +727,7 @@ aspects are nice, but on others I prefer Fira.
 ~doom-one~ is nice and all, but I find the ~vibrant~ variant nicer. Oh, and with the
 nice selection doom provides there's no reason for me to want the defaults.
 #+begin_src emacs-lisp
-(setq doom-theme 'doom-vibrant)
+(setq doom-theme 'doom-solarized-light)
 (delq! t custom-theme-load-path)
 #+end_src
 However, by default ~red~ text is used in the ~modeline~, so let's make that orange
@@ -1512,11 +1512,7 @@ Now we just need to load it appropriately.
   :mode ("authinfo.gpg\\'" . authinfo-color-mode)
   :init (advice-add 'authinfo-mode :override #'authinfo-color-mode))
 #+end_src
-*** Beancount (accounting)
-#+begin_src emacs-lisp
-(package! beancount :recipe (:host github :repo "beancount/beancount-mode")
-  :pin "7a0ef01d1ff6f8c318af944131310ca06d4c65ff")
-#+end_src
+#
 * Package configuration
 ** Abbrev mode
 Thanks to [[https://emacs.stackexchange.com/questions/45462/use-a-single-abbrev-table-for-multiple-modes/45476#45476][use a single abbrev-table for multiple modes? - Emacs Stack Exchange]] I
@@ -7638,32 +7634,5 @@ sixth greyed out. Since the sixth level is so small, I'll turn up the boldness a
   '(markdown-header-face-5 :height 0.90 :weight bold       :inherit markdown-header-face)
   '(markdown-header-face-6 :height 0.75 :weight extra-bold :inherit markdown-header-face))
 #+end_src
-** Beancount
-There are a number of rather compelling advantages to [[https://plaintextaccounting.org/][plain text accounting]],
-with [[https://www.ledger-cli.org/][ledger]] being the most obvious example. However, [[https://github.com/beancount/beancount][beancount]], a more recent
-implementation of the idea is ledger-compatable (meaning I can switch easily if
-I change my mind) and has a gorgeous front-end --- [[https://beancount.github.io/fava/][fava]].
 
-Of course, there's an Emacs mode for this.
 
-#+begin_src emacs-lisp
-(use-package! beancount
-  :mode ("\\.beancount\\'" . beancount-mode)
-  :init
-  (after! all-the-icons
-    (add-to-list 'all-the-icons-icon-alist
-                 '("\\.beancount\\'" all-the-icons-material "attach_money" :face all-the-icons-lblue))
-    (add-to-list 'all-the-icons-mode-icon-alist
-                 '(beancount-mode all-the-icons-material "attach_money" :face all-the-icons-lblue)))
-  :config
-  (setq beancount-electric-currency t)
-  (defun beancount-bal ()
-    "Run bean-report bal."
-    (interactive)
-    (let ((compilation-read-command nil))
-      (beancount--run "bean-report"
-                      (file-relative-name buffer-file-name) "bal")))
-  (map! :map beancount-mode-map
-        :n "TAB" #'beancount-align-to-previous-number
-        :i "RET" (cmd! (newline-and-indent) (beancount-align-to-previous-number))))
-#+end_src

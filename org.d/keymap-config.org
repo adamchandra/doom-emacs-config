@@ -1,0 +1,51 @@
+* Keymap Definitions
+
+#+begin_src emacs-lisp
+  ;; originally from magnars and modified by ffevotte for dedicated windows
+  ;; support, it has quite diverged by now
+  (defun spacemacs/rotate-windows-forward (count)
+    "Rotate each window forwards.
+  A negative prefix argument rotates each window backwards.
+  Dedicated (locked) windows are left untouched."
+    (interactive "p")
+    (let* ((non-dedicated-windows (cl-remove-if 'window-dedicated-p (window-list)))
+           (states (mapcar #'window-state-get non-dedicated-windows))
+           (num-windows (length non-dedicated-windows))
+           (step (+ num-windows count)))
+      (if (< num-windows 2)
+          (error "You can't rotate a single window!")
+        (dotimes (i num-windows)
+          (window-state-put
+           (elt states i)
+           (elt non-dedicated-windows (% (+ step i) num-windows)))))))
+#+end_src
+
+#+begin_src emacs-lisp
+
+  (map! :leader
+        :desc "M-x w/fuzzy matching"          "SPC"  #'spacemacs/helm-M-x-fuzzy-matching
+        :desc "Find file in project"          "pf"   #'projectile-find-file
+        :desc "Search for symbol in project"  "/"    #'+default/search-project-for-symbol-at-point
+        :desc "Search project"                "*"    #'+default/search-project
+        :desc "Win Split Horizontal"          "w2"   #'my-split-window-horizontally
+        :desc "Win Rotate Fwd"                "wr"   #'spacemacs/rotate-windows-forward
+        )
+
+  (map! ;;
+   "C-x C-s"     #'enhanced-save-buffer
+   )
+
+#+end_src
+
+
+#+begin_src emacs-lisp
+
+  ;; (define-key! :states 'normal :keymaps dired-mode-map
+  ;;    "i" 'dired-subtree-insert
+  ;;    "t" 'dired-subtree-toggle
+  ;;    (kbd "TAB") 'dired-subtree-cycle
+  ;;    )
+
+
+
+#+end_src

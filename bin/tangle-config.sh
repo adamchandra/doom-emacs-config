@@ -1,5 +1,7 @@
 #!/bin/bash
 
-emacs-28.0.50 --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "./config.org")'
-
-# doom sync
+## Provided by doom emacs in ./doom/bin/
+rm -rf ./build~
+org-tangle "./config.org"
+cp ./build~/* .
+doom sync

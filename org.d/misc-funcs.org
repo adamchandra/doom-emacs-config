@@ -1,0 +1,215 @@
+
+** Spacemacs Copypasta
+
+#+begin_src emacs-lisp
+  (defun spacemacs/helm-M-x-fuzzy-matching ()
+    "Helm M-x with fuzzy matching enabled"
+    (interactive)
+    (let ((completion-styles completion-styles))
+      (add-to-list 'completion-styles `,(if (version< emacs-version "27") 'helm-flex 'flex) t)
+      (call-interactively 'helm-M-x)))
+
+  (defun my-split-window-horizontally()
+      (interactive)
+      (split-window-right)
+      (balance-windows)
+      ;; (spacemacs/window-split-single-column)
+    )
+
+#+end_src
+
+#+begin_src emacs-lisp
+    (defun spacemacs/scala-join-line ()
+      "Adapt `scala-indent:join-line' to behave more like evil's line join.
+
+      `scala-indent:join-line' acts like the vanilla `join-line',
+      joining the current line with the previous one. The vimmy way is
+      to join the current line with the next.
+
+      Try to move to the subsequent line and then join. Then manually move
+      point to the position of the join."
+        (interactive)
+        (let (join-pos)
+          (save-excursion
+            (goto-char (line-end-position))
+            (unless (eobp)
+              (forward-line)
+              (call-interactively 'scala-indent:join-line)
+              (setq join-pos (point))))
+
+          (when join-pos
+            (goto-char join-pos))))
+
+
+    (defun find-my-init-files ()
+      (interactive)
+      (find-file-existing *acs-layer-path* )
+      )
+
+    (defun find-my-theme-file ()
+      "find the directory containing private init files"
+      (interactive)
+      (progn
+        (find-file-existing *theme-path*)
+        ))
+
+  (defun enhanced-save-buffer ()
+    (interactive)
+    (progn
+      (delete-trailing-whitespace)
+      ;; (pcase (file-name-extension buffer-file-name)
+      ;;               ("ts" (if (fboundp 'prettier-js) (prettier-js)))
+      ;;               ("tsx" (if (fboundp 'prettier-js) (prettier-js)))
+      ;;               (_ ()))
+      (save-buffer)
+      ))
+
+#+end_src
+
+#+begin_src emacs-lisp
+  (setq *adams-config-ran* nil)
+
+(defun disable-autosave ()
+  (progn
+    (setq auto-save-buffers-enhanced-activity-flag nil)
+    ))
+
+(defun enable-autosave ()
+  (progn
+    (setq auto-save-buffers-enhanced-activity-flag t)
+    ))
+
+
+
+  (defun adamchandra/final-config ()
+    (interactive)
+    (if (not *adams-config-ran*)
+        (progn
+          (message "adamchandra/final-config running")
+          (setq *adams-config-ran* t)
+
+          ;; -- ;; (add-hook 'dired-mode-hook #'my-dired-config)
+
+          ;; -- ;; (require 'org-config)
+          ;; -- ;; (require 'ts-config)
+          ;; -- ;; (require 'translate-funcs)
+          ;; -- ;; (require 'livedown)
+
+          ;; -- ;; (config-markdown-mode)
+
+          ;; -- ;; ;; prevent .#filname.xx files (which cause a problem w/ensime)
+          ;; -- ;; (setq create-lockfiles nil)
+
+          ;; -- ;; (spacemacs/set-leader-keys
+          ;; -- ;;   "bk" 'spacemacs/kill-this-buffer
+          ;; -- ;;   )
+
+
+          (add-hook! evil-insert-state-entry 'disable-autosave)
+          (add-hook! evil-insert-state-exit 'enable-autosave)
+          ;; -- ;; ;; (add-hook 'evil-insert-state-exit-hook 'autosave-file-buffer)
+          ;; -- ;; (setq dotspacemacs-auto-save-file-location nil)
+
+          ;; -- ;; (setq history-delete-duplicates t)
+
+          ;; -- ;; (spacemacs/toggle-smooth-scrolling-off)
+
+          ;; -- ;; (setq truncate-lines t)
+
+          ;; -- ;; (remove-hook 'prog-mode-hook 'auto-complete-mode)
+          ;; -- ;; (remove-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+
+
+          ;; -- ;; (menu-bar-mode -1)
+          ;; -- ;; (tool-bar-mode -1)
+          ;; -- ;; (scroll-bar-mode -1)
+
+          ;; -- ;; ;; Defined in `helm-ag.el'.
+          ;; -- ;; ;; Ignore patterns for `ag'. This parameters are specified as --ignore
+          ;; -- ;; ;; (setq helm-ag-ignore-patterns nil)
+          ;; -- ;; (setq helm-ag-use-grep-ignore-list t)
+          ;; -- ;; ;; Use .agignore where is at project root if it exists.
+          ;; -- ;; (setq helm-ag-use-agignore t)
+
+          ;; -- ;; ;; (setq browse-url-browser-function 'browse-url-generic
+          ;; -- ;; ;;       browse-url-generic-program "google-chrome")
+          ;; -- ;; ;; (setq browse-url-browser-function 'browse-url-generic
+          ;; -- ;; ;;       browse-url-generic-program "firefox")
+
+          ;; -- ;; (setq browse-url-browser-function
+          ;; -- ;;       '(("^mailto:" . browse-url-mail)
+          ;; -- ;;         ("." . browse-url-firefox))
+          ;; -- ;;       )
+
+          ;; -- ;; (setq browse-url-firefox-program "firefox")
+
+          ;; -- ;; ;; defined in `grep.el'.
+          ;; -- ;; (setq grep-find-ignored-directories
+          ;; -- ;;       '("target" ".ensime_cache"
+          ;; -- ;;         "SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" ;; defaults
+          ;; -- ;;         ))
+
+          ;; -- ;; (setq grep-find-ignored-files
+          ;; -- ;;       '(".#*" "*.lock" "*.gen" "*.si" "*.cfs" "*.cfe" "*.hi" "*.o" "*~" "*.bin"
+          ;; -- ;;         "*.lbin" "*.so" "*.a" "*.ln" "*.blg" "*.bbl" "*.elc" "*.lof" "*.glo"
+          ;; -- ;;         "*.idx" "*.lot" "*.fmt" "*.tfm" "*.class" "*.fas" "*.lib" "*.mem"
+          ;; -- ;;         "*.x86f" "*.sparcf" "*.dfsl" "*.pfsl" "*.d64fsl" "*.p64fsl"
+          ;; -- ;;         "*.lx64fsl" "*.lx32fsl" "*.dx64fsl" "*.dx32fsl" "*.fx64fsl" "*.fx32fsl"
+          ;; -- ;;         "*.sx64fsl" "*.sx32fsl" "*.wx64fsl" "*.wx32fsl" "*.fasl" "*.ufsl"
+          ;; -- ;;         "*.fsl" "*.dxl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux"
+          ;; -- ;;         "*.cp" "*.fn" "*.ky" "*.pg" "*.tp" "*.vr" "*.cps" "*.fns"
+          ;; -- ;;         "*.kys" "*.pgs" "*.tps" "*.vrs" "*.pyc" "*.pyo"
+          ;; -- ;;         ))
+
+
+
+          ;; -- ;; (remove-hook 'js2-mode-hook 'skewer-mode)
+          ;; -- ;; (remove-hook 'js2-mode-hook 'js2-imenu-extras-mode)
+
+          ;; -- ;; (eval-after-load 'tern
+          ;; -- ;;      '(progn
+          ;; -- ;;         (require 'tern-auto-complete)
+          ;; -- ;;         (tern-ac-setup)))
+
+          ;; -- ;; ;; (setq javascript-disable-tern-port-files t)
+
+          ;; -- ;; (add-hook 'js2-mode-hook
+          ;; -- ;;           (defun my-js2-mode-setup ()
+          ;; -- ;;             ;; (require 'tern)
+          ;; -- ;;             (flycheck-mode t)
+          ;; -- ;;             (auto-complete-mode t)
+          ;; -- ;;             (when (executable-find "eslint")
+          ;; -- ;;               (flycheck-select-checker 'javascript-eslint))
+          ;; -- ;;             ))
+
+          ;; -- ;; (global-display-line-numbers-mode)
+          ;; -- ;; (spacemacs/toggle-smartparens-globally-on)
+          ;; -- ;; (show-smartparens-global-mode)
+
+          ;; -- ;; (global-auto-revert-mode)
+          ;; -- ;; (setq auto-revert-verbose t)
+
+          ;; -- ;; ;; (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+          ;; -- ;; ;; (global-visual-fill-column-mode)
+
+          ;; -- ;; (fringe-mode '(24 . 14))
+          ;; -- ;; (setq visual-line-fringe-indicators '(left-curly-arrow nil))
+
+          ;; -- ;; ;; Warning (yasnippet): ‘Snippet’ modified buffer in a backquote expression.
+          ;; -- ;; ;; To hide this warning, add (yasnippet backquote-change) to ‘warning-suppress-types’.
+          ;; -- ;; (setq warning-suppress-types '(yasnippet backquote-change))
+
+          ;; -- ;; (setq bookmark-default-file "~/.emacs.d/bookmarks")  ;;define file to use.
+          ;; -- ;; (setq bookmark-save-flag 1)  ;save bookmarks to .emacs.bmk after each entry
+
+          (message "adamchandra/final-config (done) running")
+
+          )
+
+      (progn
+        (message "adamchandra/final-config *not* running, already ran")
+        )
+      )
+    )
+
+#+end_src

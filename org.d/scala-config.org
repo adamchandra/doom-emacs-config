@@ -47,7 +47,7 @@
     ;; (spacemacs/declare-prefix-for-mode 'scala-mode "mm" "")
     (map! :map scala-mode-map
           :localleader
-          (:prefix ("e" . "errors")
+          (:prefix ("e" . "errors"))
           :desc "errors"                                      "ee"  #'lsp-ui-flycheck-list
           :desc "errors"                                      "eq"  #'lsp-ui-flycheck-list--quit
           :desc "Format buffer"                               "fb"  #'lsp-format-buffer

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-kill emacs
+pkill emacs
 rm -rf ./build~
 
 ## Provided by doom emacs in ./doom/bin/

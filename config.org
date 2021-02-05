@@ -76,6 +76,8 @@ This file shouldn't be byte compiled.
 
 #+end_src
 
+#+INCLUDE: "./org.d/ts-config.org::*Packages"
+
 
 ** Package Config
 #+begin_src emacs-lisp
@@ -103,10 +105,11 @@ This file shouldn't be byte compiled.
 
 ** Lang
 #+INCLUDE: "./org.d/scala-config.org"
-
+#+INCLUDE: "./org.d/ts-config.org::*Config"
 
 ** Keymap Defs
 #+INCLUDE: "./org.d/keymap-config.org"
+#+INCLUDE: "./org.d/ts-config.org::*Keybindings"
 
 ** Run Final Config
 

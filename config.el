@@ -464,6 +464,171 @@ the current layouts buffers."
   )
 ;; Scala Config:1 ends here
 
+;; [[file:../config.org::*Funcs][Funcs:1]]
+(defun executable-find-prefer-node-modules (command)
+  (interactive)
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (cmd (and root
+                   (expand-file-name
+                    (concat "node_modules/.bin/" command)
+                    root))))
+    (when (and cmd (file-executable-p cmd))
+      cmd)
+    )
+  )
+;; Funcs:1 ends here
+
+;; [[file:../config.org::*Funcs][Funcs:2]]
+(defun find-eslint-config ()
+  " "
+  (interactive)
+  (let* (
+         (config-file ".eslintrc.js")
+         (config-file-alt ".eslintrc.emacs.js")
+         (root-norm (locate-dominating-file
+                     (or (buffer-file-name) default-directory)
+                     config-file))
+         (root-alt (locate-dominating-file
+                    (or (buffer-file-name) default-directory)
+                    config-file-alt))
+         (config (if root-alt
+                     (expand-file-name config-file-alt root-alt)
+                   (expand-file-name config-file root-norm)
+                   ))
+         )
+    (message (concat "found config:" config))
+    config
+    ));
+;; Funcs:2 ends here
+
+;; [[file:../config.org::*Funcs][Funcs:3]]
+(defun my/flycheck-executable-find (executable)
+  "Resolve EXECUTABLE to a full path.
+Like `executable-find', but supports relative paths.
+
+Attempts invoking `executable-find' first; if that returns nil,
+and EXECUTABLE contains a directory component, expands to a full
+path and tries invoking `executable-find' again.
+"
+  ;; file-name-directory returns non-nil iff the given path has a
+  ;; directory component.
+  (or
+   (executable-find-prefer-node-modules executable)
+   (executable-find executable)
+   (when (file-name-directory executable)
+     (executable-find (expand-file-name executable))))
+  )
+
+(setq flycheck-executable-find #'my/flycheck-executable-find)
+
+(setq typescript-linter 'eslint)
+
+(defun my-web-mode-hook ()
+  (smartparens-mode)
+  )
+
+(defun my-tide-setup-hook ()
+  ;; (message (concat "running my-tide-setup-hook on: " buffer-file-name))
+  (tide-setup)
+  (eldoc-mode)
+  (tide-hl-identifier-mode +1)
+  (turn-on-smartparens-mode)
+
+  (setq web-mode-enable-auto-quoting nil)
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-attr-indent-offset 2)
+  (setq web-mode-attr-value-indent-offset 2)
+  (set (make-local-variable 'company-backends)
+       '((company-tide company-files)
+         (company-dabbrev-code company-dabbrev)))
+
+
+  (flycheck-add-mode 'typescript-tslint 'web-mode)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+
+  (setq tide-tsserver-executable (executable-find-prefer-node-modules "tsserver"))
+  (setq prettier-js-command (executable-find-prefer-node-modules "prettier"))
+
+  (setq tide-tsserver-process-environment '("TSS_LOG=-level verbose -file /tmp/tsserver.log"))
+  ;; (defcustom tide-server-max-response-length 102400
+  ;;   "Maximum allowed response length from tsserver. Any response greater than this would be ignored."
+
+  (setq flycheck-eslint-args `("--no-eslintrc" ,(concat "--config=" (find-eslint-config))))
+
+  (custom-set-variables
+   '(js-indent-level 2)
+   '(typescript-indent-level 2)
+   '(tide-completion-detailed t)
+   '(tide-completion-ignore-case t)
+   )
+
+  (setq tide-user-preferences
+        '(
+          :disableSuggestions nil
+          ;;  If enabled, TypeScript will search through all external modules' exports and add them to the completions list.
+          ;;  This affects lone identifier completions but not completions on the right hand side of `obj.`.
+          :includeCompletionsForModuleExports t
+
+          ;;  If enabled, the completion list will include completions with invalid identifier names.
+          ;;  For those entries, The `insertText` and `replacementSpan` properties will be set to change from `.x` property access to `["x"]`.
+          :includeCompletionsWithInsertText t
+
+          :allowTextChangesInNewFiles t
+          :quotePreference "single" ;;  "auto" | "double" | "single";
+
+          ;; :importModuleSpecifierPreference "relative";; "relative" | "non-relative";
+          ;; :allowTextChangesInNewFiles  t;; boolean;
+          ;; :lazyConfiguredProjectsFromExternalProject?: boolean;
+          ;; :providePrefixAndSuffixTextForRename?: boolean;
+          ;; :allowRenameOfImportPath?: boolean;
+          ))
+
+
+  ;; Overriding this function due to bug (error "Selecting deleted buffer") in with-current-buffer
+  (defun tide-dispatch-event (event)
+    (-when-let (listener (gethash (tide-project-name) tide-event-listeners))
+      (progn
+        (if (buffer-live-p (car listener))
+            (with-current-buffer (car listener)
+              (apply (cdr listener) (list event)))))
+      ))
+
+  )
+
+;; (use-package! prettier-js :defer t)
+
+(use-package! tide
+  :defer t)
+
+(defun web-mode-setup-my-hooks ()
+    (pcase (file-name-extension buffer-file-name)
+      ("tsx" (my-tide-setup-hook))
+      (_ (my-web-mode-hook)))
+    )
+
+(use-package! web-mode
+  :mode (("\\.tsx$" . web-mode))
+  :init
+
+  ;; (remove-hook 'web-mode-hook 'spacemacs/toggle-smartparens-off)
+  ;; (remove-hook 'web-mode-hook 'turn-on-evil-matchit-mode)
+  (remove-hook 'web-mode-hook 'web-mode-setup-my-hooks)
+
+  (add-hook 'web-mode-hook 'company-mode)
+  (add-hook 'web-mode-hook 'web-mode-setup-my-hooks)
+  )
+
+(use-package! typescript-mode
+  :mode (("\\.ts$" . typescript-mode))
+  :init
+  (add-hook 'typescript-mode-hook 'my-tide-setup-hook t)
+  (add-hook 'typescript-mode-hook 'company-mode)
+  )
+;; Funcs:3 ends here
+
 ;; [[file:../config.org::*Keymap Definitions][Keymap Definitions:1]]
 ;; originally from magnars and modified by ffevotte for dedicated windows
 ;; support, it has quite diverged by now
@@ -524,6 +689,37 @@ Dedicated (locked) windows are left untouched."
 ;;    (kbd "TAB") 'dired-subtree-cycle
 ;;    )
 ;; Keymap Definitions:3 ends here
+
+;; [[file:../config.org::*Keybindings][Keybindings:1]]
+(after! typescript-mode
+  (map! :map typescript-mode-map
+        :localleader
+        "xR" #'tide-restart-server
+        "gd" #'tide-documentation-at-point
+        "gr" #'tide-references
+        "es" #'tide-error-at-point
+        "ee" #'tide-project-errors
+        "ei" #'tide-add-tslint-disable-next-line
+        "en" #'flycheck-next-error
+        "ep" #'flycheck-previous-error
+        "ef" #'tide-fix
+        "rr" #'tide-rename-symbol
+        "rF" #'tide-refactor
+        "rp" #'tide-format
+        "rP" #'prettier-js
+        "rf" #'tide-rename-file
+        "ri" #'tide-organize-imports
+        )
+  )
+
+(evil-define-key 'normal tide-mode-map
+  (kbd "M-.") 'tide-jump-to-definition
+  )
+
+(evil-define-key 'normal tide-project-errors-mode-map
+  (kbd "RET") 'tide-goto-error
+  )
+;; Keybindings:1 ends here
 
 ;; [[file:../config.org::*Run Final Config][Run Final Config:1]]
 (adamchandra/final-config)

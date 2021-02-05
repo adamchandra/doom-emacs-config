@@ -2,9 +2,22 @@
 
 #+begin_src emacs-lisp
 
-  ;; LSP :: You can configure this warning with the `lsp-enable-file-watchers' and `lsp-file-watch-threshold' variables
+;; LSP :: You can configure this warning with the `lsp-enable-file-watchers' and `lsp-file-watch-threshold' variables
 
-  (defun acs-config-scala-mode ()
+;; (defcustom lsp-file-watch-ignored-directories
+(after! lsp-metals
+  (setq lsp-file-watch-ignored-directories
+        (append lsp-file-watch-ignored-directories
+                '(; SCM tools
+                  "[/\\\\]\\.bsp\\'"
+                  "[/\\\\].*corpus\\.d\\'"
+                  )
+                )
+        )
+  )
+
+(after! scala-mode
+  (progn
     (message "running acs-config-scala-mode")
 
     (add-hook 'scala-mode-hook 'turn-on-auto-revert-mode)
@@ -32,39 +45,52 @@
 
     ;; (spacemacs/declare-prefix-for-mode 'scala-mode "m" nil)
     ;; (spacemacs/declare-prefix-for-mode 'scala-mode "mm" "")
+    (map! :map scala-mode-map
+          :localleader
+          (:prefix ("e" . "errors")
+          :desc "errors"                                      "ee"  #'lsp-ui-flycheck-list
+          :desc "errors"                                      "eq"  #'lsp-ui-flycheck-list--quit
+          :desc "Format buffer"                               "fb"  #'lsp-format-buffer
+          :desc "Format buffer"                               "rp"  #'lsp-format-buffer
+          :desc "Format region or line"                       "fr"  #'lsp-format-region
+          :desc "Goto declarations of symbol under point"     "gd"  #'lsp-find-declaration
+          :desc "Goto definitions of symbol"                  "gf"  #'lsp-find-definition
+          :desc "Goto implementations of symbol under point"  "gi"  #'lsp-find-implementation
+          :desc "Goto references to symbol under point"       "gr"  #'lsp-find-references
+          :desc "Goto type definitions of symbol under point" "gt"  #'lsp-find-type-definition
+          )
+
+    ;;       (map! :after python
+    ;;         :map python-mode-map
+    ;;         :localleader
+    ;;         (:prefix ("i" . "imports")
+    ;;           :desc "Sort imports"      "s" #'py-isort-buffer
+    ;;           :desc "Sort region"       "r" #'py-isort-region)))
+
 
     ;; (evil-leader/set-key
-  ;; --(spacemacs/set-leader-keys-for-major-mode 'scala-mode
-  ;; --"ee" 'lsp-ui-flycheck-list          ;; e+ errors
-  ;; --"fb" 'lsp-format-buffer            ;; e+ Format buffer
-  ;; --"rp" 'lsp-format-buffer            ;; (matches typescript formatting keys)
-  ;; --"fr"  'lsp-format-region           ;; Format region or line
-  ;; --"gd"  'lsp-find-declaration        ;; Goto declarations of symbol under point
-  ;; --"gf"  'lsp-find-definition         ;; Goto definitions of symbol
-  ;; --"gi"  'lsp-find-implementation     ;; Goto implementations of symbol under point
-  ;; --"gr"  'lsp-find-references         ;; Goto references to symbol under point
-  ;; --"gt"  'lsp-find-type-definition    ;; Goto type definitions of symbol under point
-  ;; --
-  ;; --"esl"  'lsp-switch-to-io-log-buffer ;; Switch to log View IO logs for workspace
-  ;; --"etl"  'lsp-lens-mode               ;; Toggle Code Lenses
-  ;; --"etd"  'lsp-describe-thing-at-point ;; Describe thing at point
-  ;; --"ea"  'lsp-execute-code-action     ;; Execute code action
-  ;; --;; "e"  'lsp-document-highlight      ;; Highlight references to symbol under point
-  ;; --;; "e"  'lsp-rename                  ;; Rename symbol under point
-  ;; --;; "e"  'lsp-shutdown-workspace      ;; Shutdown language server
-  ;; --"udd"  'lsp-ui-doc-show
-  ;; --"upr"  'lsp-ui-peek-find-references
-  ;; --"upd"  'lsp-ui-peek-find-definitions
-  ;; --
-  ;; --"exs"  'lsp-restart-workspace       ;; Execute (Restart) language server
-  ;; --"md"  'lsp-metals-doctor-run       ;; Execute Doctor
-  ;; --"mt"  'lsp-metals-treeview         ;; Switch to treeview
-  ;; --"mbi" 'lsp-metals-build-import  ;; Unconditionally run `sbt bloopInstall` and re-connect to the build server."
-  ;; --"mbc" 'lsp-metals-build-connect ;; Unconditionally cancel existing build server connection and re-connect."
-  ;; --"mbs" 'lsp-metals-bsp-switch  ;; Interactively switch between BSP servers.
-  ;; --"mss" 'lsp-metals-sources-scan  ;; Walk all files in the workspace and index where symbols are defined."
-  ;; --"mrc" 'lsp-metals-reset-choice  ;; Reset a decision you made about different settings. E.g. If you choose to import workspace with sbt you can decide to reset and change it again."
-  ;; --)
+    ;; --(spacemacs/set-leader-keys-for-major-mode 'scala-mode
+
+    ;; --"esl"  'lsp-switch-to-io-log-buffer ;; Switch to log View IO logs for workspace
+    ;; --"etl"  'lsp-lens-mode               ;; Toggle Code Lenses
+    ;; --"etd"  'lsp-describe-thing-at-point ;; Describe thing at point
+    ;; --"ea"  'lsp-execute-code-action     ;; Execute code action
+    ;; --;; "e"  'lsp-document-highlight      ;; Highlight references to symbol under point
+    ;; --;; "e"  'lsp-rename                  ;; Rename symbol under point
+    ;; --;; "e"  'lsp-shutdown-workspace      ;; Shutdown language server
+    ;; --"udd"  'lsp-ui-doc-show
+    ;; --"upr"  'lsp-ui-peek-find-references
+    ;; --"upd"  'lsp-ui-peek-find-definitions
+    ;; --
+    ;; --"exs"  'lsp-restart-workspace       ;; Execute (Restart) language server
+    ;; --"md"  'lsp-metals-doctor-run       ;; Execute Doctor
+    ;; --"mt"  'lsp-metals-treeview         ;; Switch to treeview
+    ;; --"mbi" 'lsp-metals-build-import  ;; Unconditionally run `sbt bloopInstall` and re-connect to the build server."
+    ;; --"mbc" 'lsp-metals-build-connect ;; Unconditionally cancel existing build server connection and re-connect."
+    ;; --"mbs" 'lsp-metals-bsp-switch  ;; Interactively switch between BSP servers.
+    ;; --"mss" 'lsp-metals-sources-scan  ;; Walk all files in the workspace and index where symbols are defined."
+    ;; --"mrc" 'lsp-metals-reset-choice  ;; Reset a decision you made about different settings. E.g. If you choose to import workspace with sbt you can decide to reset and change it again."
+    ;; --)
 
     ;; lsp-find-definition
     (evil-define-key 'normal scala-mode-map
@@ -127,5 +153,6 @@
           )
 
     )
+  )
 
 #+end_src

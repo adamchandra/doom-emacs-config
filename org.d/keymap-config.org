@@ -22,18 +22,38 @@
 
 #+begin_src emacs-lisp
 
+;; (after! snipe
+;;   (setq evil-snipe-override-evil-repeat-keys nil)
+;;   (setq doom-localleader-key ",")
+;;   (setq doom-localleader-alt-key "M-,")
+;;   )
+
+(setq evil-snipe-override-evil-repeat-keys nil)
+(setq doom-localleader-key ",")
+(setq doom-localleader-alt-key "M-,")
+
+
+(after! winum
   (map! :leader
-        :desc "M-x w/fuzzy matching"          "SPC"  #'spacemacs/helm-M-x-fuzzy-matching
-        :desc "Find file in project"          "pf"   #'projectile-find-file
-        :desc "Search for symbol in project"  "/"    #'+default/search-project-for-symbol-at-point
-        :desc "Search project"                "*"    #'+default/search-project
         :desc "Win Split Horizontal"          "w2"   #'my-split-window-horizontally
         :desc "Win Rotate Fwd"                "wr"   #'spacemacs/rotate-windows-forward
         )
+  )
 
-  (map! ;;
-   "C-x C-s"     #'enhanced-save-buffer
-   )
+(map! :leader
+      :desc "M-x w/fuzzy matching"          "SPC"  #'spacemacs/helm-M-x-fuzzy-matching
+      :desc "Find file in project"          "pf"   #'projectile-find-file
+      :desc "Search for symbol in project"  "/"    #'+default/search-project-for-symbol-at-point
+      :desc "Search project"                "*"    #'+default/search-project
+      :desc "Previous Buffer"               "TAB"  #'spacemacs/alternate-buffer
+      )
+
+(map! ;;
+ "C-x C-s"  #'enhanced-save-buffer
+ "M-/"      #'hippie-expand
+ )
+
+
 
 #+end_src
 

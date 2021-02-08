@@ -1,6 +1,69 @@
 
-** Spacemacs Copypasta
+** Assorted Functions
 
+#+begin_src emacs-lisp
+
+(defun my/flycheck-executable-find (executable)
+  "Resolve EXECUTABLE to a full path.
+Like `executable-find', but supports relative paths.
+
+Attempts invoking `executable-find' first; if that returns nil,
+and EXECUTABLE contains a directory component, expands to a full
+path and tries invoking `executable-find' again.
+"
+  ;; file-name-directory returns non-nil iff the given path has a
+  ;; directory component.
+  (or
+   (executable-find-prefer-node-modules executable)
+   (executable-find executable)
+   (when (file-name-directory executable)
+     (executable-find (expand-file-name executable))))
+  )
+#+end_src
+
+#+begin_src emacs-lisp
+(defun executable-find-prefer-node-modules (command)
+  (interactive)
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (cmd (and root
+                   (expand-file-name
+                    (concat "node_modules/.bin/" command)
+                    root))))
+    (when (and cmd (file-executable-p cmd))
+      cmd)
+    )
+  )
+#+end_src
+
+Find either a regular .eslintrc.js file or one specially made for emacs usage
+#+begin_src emacs-lisp
+(defun find-eslint-config ()
+  " "
+  (interactive)
+  (let* (
+         (config-file ".eslintrc.js")
+         (config-file-alt ".eslintrc.emacs.js")
+         (root-norm (locate-dominating-file
+                     (or (buffer-file-name) default-directory)
+                     config-file))
+         (root-alt (locate-dominating-file
+                    (or (buffer-file-name) default-directory)
+                    config-file-alt))
+         (config (if root-alt
+                     (expand-file-name config-file-alt root-alt)
+                   (expand-file-name config-file root-norm)
+                   ))
+         )
+    (message (concat "found config:" config))
+    config
+    ));
+
+#+end_src
+
+** Spacemacs Copypasta
+Things I missed whem moving from spacemacs -> doom
 #+begin_src emacs-lisp
 
 (defun spacemacs/alternate-window ()
@@ -147,7 +210,6 @@ the current layouts buffers."
   (interactive)
   (if (not *adams-config-ran*)
       (progn
-        (backtrace)
         (setq *adams-config-ran* t)
         (message "adamchandra/final-config running")
 

@@ -4,14 +4,14 @@
 ;; Press 'K' on a module to view its documentation, and 'gd' to browse its directory.
 
 (doom! :completion
-       (company                     ; the ultimate code completion backend
-        +childframe)                ; ... when your children are better than you
-       helm                         ; the *other* search engine for love and life
-       ;;ido                        ; the other *other* search engine...
-       (ivy                         ; a search engine for love and life
-        +icons                      ; ... icons are nice
-        +prescient)                 ; ... I know what I want(ed)
+       (company
+        +childframe)
+       helm
+       (ivy
+        +icons
+        +prescient)
 
+       ;;;;;;;;;;;;
        :ui
        doom                         ; what makes DOOM look the way it does
        doom-dashboard               ; a nifty splash screen for Emacs
@@ -21,7 +21,6 @@
        ;;hydra                      ; quick documentation for related commands
        ;;indent-guides              ; highlighted indent columns, notoriously slow
        ;; (ligatures +extra)           ; ligatures and symbols to make your code pretty again
-       ;;minimap                    ; show a map of the code on the side
        modeline                     ; snazzy, Atom-inspired modeline, plus API
        nav-flash                    ; blink the current line after jumping
        ;;neotree                    ; a project drawer, like NERDTree for vim
@@ -36,6 +35,7 @@
        (window-select +numbers)     ; visually switch windows
        zen                          ; distraction-free coding or writing
 
+       ;;;;;;;;;;;;
        :editor
        (evil +everywhere)
        file-templates               ; auto-snippets for empty files
@@ -64,29 +64,29 @@
        vc
 
        :lang
-       data                         ; config/data formats
-       emacs-lisp                   ; drown in parentheses
-       (haskell +dante)             ; a language that's lazier than I am
-       (javascript +lsp)            ; all(hope(abandon(ye(who(enter(here))))))
-       (latex                       ; writing papers in Emacs has never been so fun
-        +latexmk                    ; what else would you use?
-        +cdlatex                    ; quick maths symbols
-        +fold)                      ; fold the clutter away nicities
-       markdown                     ; writing docs for people to ignore
-       (org                         ; organize your plain life in plain text
-        +pretty                     ; yessss my pretties! (nice unicode symbols)
-        +jupyter                    ; ipython/jupyter support for babel
-        +pandoc                     ; export-with-pandoc support
-        +gnuplot                    ; who doesn't like pretty pictures
+       data
+       emacs-lisp
+       (haskell +dante)
+       ;; (javascript +lsp)
+       javascript
+       (latex
+        +latexmk
+        +cdlatex
+        +fold)
+       markdown
+       (org
+        +pretty
+        +jupyter
+        +pandoc
+        +gnuplot
         )
-       (python +lsp +pyright)       ; beautiful is better than ugly
-       (scala +lsp)                 ; java, but good
-       scheme                       ; a fully conniving family of lisps
-       sh                           ; she sells {ba,z,fi}sh shells on the C xor
-       web                          ; the tubes
-       yaml                         ; JSON, but readable
+       (python +lsp +pyright)
+       (scala +lsp)
+       scheme
+       sh
+       web
+       yaml
 
        :config
-       ; literate
        (default +bindings +smartparens)
        )

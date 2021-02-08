@@ -1,0 +1,26 @@
+
+* Typescript Config
+** Packages
+
+#+begin_src emacs-lisp
+
+
+
+#+end_src
+
+** Config
+
+#+begin_src emacs-lisp
+
+#+end_src
+
+*** Funcs
+
+
+
+** Keybindings
+
+Put package configuration here
+#+begin_src emacs-lisp :tangle no
+
+#+end_src

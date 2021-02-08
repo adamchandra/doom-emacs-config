@@ -1,0 +1,18 @@
+* Flycheck Config
+** Packages
+** Config
+
+** Keybindings
+#+begin_src emacs-lisp
+
+(after! flycheck-mode!
+  (map! :map flycheck-mode-map
+        :leader
+        :desc "Next Error"      "en"   #'flycheck-next-error
+        :desc "Previous Error"  "ep"   #'flycheck-previous-error
+        )
+  )
+
+
+
+#+end_src

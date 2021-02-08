@@ -76,7 +76,7 @@ This file shouldn't be byte compiled.
 
 #+end_src
 
-#+INCLUDE: "./org.d/ts-config.org::*Packages"
+#+INCLUDE: "./org.d/lsp-config.org::*Packages"
 
 
 ** Package Config
@@ -105,24 +105,43 @@ This file shouldn't be byte compiled.
 
 ** Lang
 #+INCLUDE: "./org.d/scala-config.org"
-#+INCLUDE: "./org.d/ts-config.org::*Config"
+#+INCLUDE: "./org.d/lsp-config.org::*Config"
+
 
 ** Keymap Defs
 #+INCLUDE: "./org.d/keymap-config.org"
-#+INCLUDE: "./org.d/ts-config.org::*Keybindings"
+#+INCLUDE: "./org.d/lsp-config.org::*Keybindings"
+#+INCLUDE: "./org.d/flycheck-config.org::*Keybindings"
 
 ** Run Final Config
-
 #+begin_src emacs-lisp
+
+(load-file
+ (expand-file-name "./org.d/ts-tide-config.el" doom-private-dir)
+ )
 
 (adamchandra/final-config)
 
 #+end_src
 
+** Make company mode never include ispell
+#+begin_src emacs-lisp
+;;  company-files
+;;  company-ispell
+;;; form
 
-** How to disable tangle-on-save
-There are occasions where tangling on save may be undesirable. Maybe it's too
-slow, produces too much noise, or happens too often (on unrelated org files in
-your =DOOMDIR=). This behavior can be disabled with:
-;; add to DOOMDIR/config.el
-;; (remove-hook 'org-mode-hook #'+literate-enable-recompile-h)
+(defun my/company-backend-setup ()
+  ;; (make-local-variable 'company-backends)
+  (message "running my/company-backend-setup")
+  (setq company-backends
+        '(company-capf
+          (:separate company-dabbrev company-dabbrev-code company-yasnippet)
+          )
+        )
+  )
+
+(add-hook! '(org-mode-hook lsp-mode-hook)
+           :append
+           #'my/company-backend-setup
+           )
+#+end_src

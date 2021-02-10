@@ -106,6 +106,7 @@ This file shouldn't be byte compiled.
 ** Lang
 #+INCLUDE: "./org.d/scala-config.org"
 #+INCLUDE: "./org.d/lsp-config.org::*Config"
+#+INCLUDE: "./org.d/org-config.org::*Config"
 
 
 ** Keymap Defs
@@ -140,7 +141,7 @@ This file shouldn't be byte compiled.
         )
   )
 
-(add-hook! '(org-mode-hook lsp-mode-hook)
+(add-hook! '(lsp-mode-hook)
            :append
            #'my/company-backend-setup
            )

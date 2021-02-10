@@ -27,7 +27,6 @@
   )
 
 (after! lsp-mode
-  (message "after lsp")
   (setq lsp-file-watch-ignored-directories
         (append lsp-file-watch-ignored-directories
                 '(; SCM tools

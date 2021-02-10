@@ -1,0 +1,88 @@
+** Config
+
+#+begin_src emacs-lisp
+
+(defconst *orgfile-dir* (expand-file-name "/home/saunders/projects/the-livingroom/sys-config/org-files/orgs/"))
+(setq org-directory *orgfile-dir*)
+
+(after! org-mode
+  ;; (require 'org-funcs)
+  ;; (remove-hook 'org-mode-hook 'auto-complete-mode)
+
+  (setq org-default-notes-file (expand-file-name (concat *orgfile-dir* "refile-agenda.org")))
+  (setq org-journal-file (expand-file-name (concat *orgfile-dir* "journal.org")))
+
+  (add-hook!
+   '(org-mode-hook)
+   :append
+   (defun set-company-backends()
+     (set (make-local-variable 'company-backends)
+          '(company-capf (:separate company-dabbrev company-dabbrev-code company-yasnippet))
+          )
+     )
+   )
+  )
+
+(defun at-current-buffer-point ()
+  (buffer-file-name)
+  )
+
+;; "* %i\n%:link\n%:description\n%:annotation\n%:i\n%a"
+(after! org-capture
+  (setq org-capture-templates/orig (copy-sequence org-capture-templates))
+  (setq org-capture-templates
+        (append
+         '(
+           ("s" "Study/Reading Templates")
+           ("sw" "Reading Webpage" entry
+            (clock)
+            "* [[%:link][%i]]"
+            :immediate-finish t
+            :jump-to-captured t
+            :empty-lines-after 1
+            :unnarrowed t
+            )
+           ("st" "Reading Webpage => Todo/Inbox" entry
+            (file+headline +org-capture-todo-file "Inbox")
+            "* %i\n%:annotation\n%:i\n"
+            :immediate-finish t
+            :jump-to-captured t
+            :empty-lines-after 1
+            :unnarrowed t
+            )
+           )
+         org-capture-templates/orig
+         )
+        )
+
+  )
+
+#+end_src
+*** Javascript Bookmark to be placed in Firefox
+#+begin_src js :tangle no
+javascript:location.href='org-protocol://capture?template=sw'+ '&url='+encodeURIComponent(window.location.href)+ '&title='+encodeURIComponent(document.title)+ '&body='+encodeURIComponent(window.getSelection());
+#+end_src
+
+*** Register org protocol
+The recommended method of registering a protocol is by registering a desktop
+application, which seems reasonable.
+
+#+begin_src conf :tangle build~/org-protocol.desktop :mkdirp yes
+[Desktop Entry]
+Name=Org-Protocol
+Exec=emacsclient %u
+Icon=emacs-icon
+Type=Application
+Terminal=false
+MimeType=x-scheme-handler/org-protocol
+#+end_src
+
+
+To associate ~org-protocol://~ links with the desktop file,
+#+begin_src shell :tangle (if (string= (shell-command-to-string "xdg-mime query default x-scheme-handler/org-protocol") "org-protocol.desktop\n") "no" "setup.sh")
+xdg-mime default org-protocol.desktop x-scheme-handler/org-protocol
+update-desktop-database ~/.local/share/applications
+echo copy build~/org-protocol.desktop ~/.local/share/applications/org-protocol.desktop
+#+end_src
+
+

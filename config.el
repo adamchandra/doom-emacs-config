@@ -439,7 +439,6 @@ the current layouts buffers."
   )
 
 (after! lsp-mode
-  (message "after lsp")
   (setq lsp-file-watch-ignored-directories
         (append lsp-file-watch-ignored-directories
                 '(; SCM tools
@@ -495,6 +494,63 @@ the current layouts buffers."
         lsp-ui-peek-list-width 50      ;;   "Width of the right panel."
         lsp-ui-peek-fontify 'on-demand ;;   "Whether to fontify chunks of code (use semantics colors).
         lsp-ui-peek-always-show nil    ;;   "Show the peek view even if there is only 1 cross reference.
+        )
+
+  )
+;; Config:1 ends here
+
+;; [[file:../config.org::*Config][Config:1]]
+(defconst *orgfile-dir* (expand-file-name "/home/saunders/projects/the-livingroom/sys-config/org-files/orgs/"))
+(setq org-directory *orgfile-dir*)
+
+(after! org-mode
+  ;; (require 'org-funcs)
+  ;; (remove-hook 'org-mode-hook 'auto-complete-mode)
+
+  (setq org-default-notes-file (expand-file-name (concat *orgfile-dir* "refile-agenda.org")))
+  (setq org-journal-file (expand-file-name (concat *orgfile-dir* "journal.org")))
+
+  (add-hook!
+   '(org-mode-hook)
+   :append
+   (defun set-company-backends()
+     (set (make-local-variable 'company-backends)
+          '(company-capf (:separate company-dabbrev company-dabbrev-code company-yasnippet))
+          )
+     )
+   )
+  )
+
+(defun at-current-buffer-point ()
+  (buffer-file-name)
+  )
+
+;; "* %i\n%:link\n%:description\n%:annotation\n%:i\n%a"
+(after! org-capture
+  (setq org-capture-templates/orig (copy-sequence org-capture-templates))
+  (setq org-capture-templates
+        (append
+         '(
+           ("s" "Study/Reading Templates")
+           ("sw" "Reading Webpage" entry
+            (clock)
+            "* [[%:link][%i]]"
+            :immediate-finish t
+            :jump-to-captured t
+            :empty-lines-after 1
+            :unnarrowed t
+            )
+           ("st" "Reading Webpage => Todo/Inbox" entry
+            (file+headline +org-capture-todo-file "Inbox")
+            "* %i\n%:annotation\n%:i\n"
+            :immediate-finish t
+            :jump-to-captured t
+            :empty-lines-after 1
+            :unnarrowed t
+            )
+           )
+         org-capture-templates/orig
+         )
         )
 
   )
@@ -649,7 +705,7 @@ Dedicated (locked) windows are left untouched."
         )
   )
 
-(add-hook! '(org-mode-hook lsp-mode-hook)
+(add-hook! '(lsp-mode-hook)
            :append
            #'my/company-backend-setup
            )

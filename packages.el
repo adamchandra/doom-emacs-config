@@ -7,3 +7,7 @@
 (package! evil-escape :disable t)
 
 (package! lsp-mode)
+
+(package! org-noter)
+(package! org-ref)
+(package! helm-bibtex)

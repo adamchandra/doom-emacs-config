@@ -500,15 +500,54 @@ the current layouts buffers."
 ;; Config:1 ends here
 
 ;; [[file:../config.org::*Config][Config:1]]
-(defconst *orgfile-dir* (expand-file-name "/home/saunders/projects/the-livingroom/sys-config/org-files/orgs/"))
-(setq org-directory *orgfile-dir*)
+(load-file (expand-file-name "./org.d/org-config.el" doom-private-dir))
+
+(use-package! org-noter
+  :defer t
+  :config (progn
+            (map! :map org-noter-doc-mode-map
+                  :localleader
+                  :desc "Insert Note"           "ni"  #'org-noter-insert-note
+                  :desc "Insert Precise Note"   "np"  #'org-noter-insert-precise-note
+                  :desc "Kill Session"          "qq"  #'org-noter-kill-session
+                  :desc "Create Skeleton"       "kk"  #'org-noter-create-skeleton
+                  :desc "Sync Current"          "ss"  #'org-noter-sync-current-note
+                  :desc "Sync Prev"             "sp"  #'org-noter-sync-prev-note
+                  :desc "Sync Next"             "sn"  #'org-noter-sync-next-note
+                  )
+            ;; (map! :map org-noter-notes-mode-map
+            ;;       :localleader
+            ;;       :desc "Insert Note"           "ni"  #'org-noter-insert-note
+            ;;       :desc "Insert Precise Note"   "np"  #'org-noter-insert-precise-note
+            ;;       :desc "Kill Session"          "qq"  #'org-noter-kill-session
+            ;;       :desc "Create Skeleton"       "kk"  #'org-noter-create-skeleton
+            ;;       :desc "Sync Current"          "ss"  #'org-noter-sync-current-note
+            ;;       :desc "Sync Prev"             "sp"  #'org-noter-sync-prev-note
+            ;;       :desc "Sync Next"             "sn"  #'org-noter-sync-next-note
+            ;;       )
+
+            (add-hook!
+             '(org-noter-notes-mode-map)
+             (setup-org-notetaking (projectile-project-root))
+             )
+            )
+
+  )
+(use-package! org-ref
+  :defer t
+  )
+(use-package! helm-bibtex
+  :defer t
+  )
+
+(defconst *default-orgfile-dir* (expand-file-name "/home/saunders/projects/the-livingroom/sys-config/org-files"))
 
 (after! org-mode
   ;; (require 'org-funcs)
-  ;; (remove-hook 'org-mode-hook 'auto-complete-mode)
-
-  (setq org-default-notes-file (expand-file-name (concat *orgfile-dir* "refile-agenda.org")))
-  (setq org-journal-file (expand-file-name (concat *orgfile-dir* "journal.org")))
+  (remove-hook 'org-mode-hook 'auto-complete-mode)
+  ;; (setq org-default-notes-file (expand-file-name (concat *orgfile-dir* "refile-agenda.org")))
+  ;; (setq org-journal-file (expand-file-name (concat *orgfile-dir* "journal.org")))
+  (setup-org-notetaking *default-orgfile-dir*)
 
   (add-hook!
    '(org-mode-hook)

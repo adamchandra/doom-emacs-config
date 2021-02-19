@@ -5,7 +5,7 @@
 ** Keybindings
 #+begin_src emacs-lisp
 
-(after! flycheck-mode!
+(after! flycheck
   (map! :map flycheck-mode-map
         :leader
         :desc "Next Error"      "en"   #'flycheck-next-error

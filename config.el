@@ -263,11 +263,25 @@ the current layouts buffers."
         ;; -- ;; ;; (add-hook 'evil-insert-state-exit-hook 'autosave-file-buffer)
         ;; -- ;; (setq dotspacemacs-auto-save-file-location nil)
 
-        ;; -- ;; (setq history-delete-duplicates t)
+        (setq history-delete-duplicates t)
 
         ;; -- ;; (spacemacs/toggle-smooth-scrolling-off)
 
-        ;; -- ;; (setq truncate-lines t)
+        (setq truncate-lines t)
+
+
+        ;;; Markdown mode
+(add-hook! (gfm-mode markdown-mode) #'mixed-pitch-mode)
+
+(add-hook! (gfm-mode markdown-mode) #'visual-line-mode #'turn-off-auto-fill)
+
+(custom-set-faces!
+  '(markdown-header-face-1 :height 1.25 :weight extra-bold :inherit markdown-header-face)
+  '(markdown-header-face-2 :height 1.15 :weight bold       :inherit markdown-header-face)
+  '(markdown-header-face-3 :height 1.08 :weight bold       :inherit markdown-header-face)
+  '(markdown-header-face-4 :height 1.00 :weight bold       :inherit markdown-header-face)
+  '(markdown-header-face-5 :height 0.90 :weight bold       :inherit markdown-header-face)
+  '(markdown-header-face-6 :height 0.75 :weight extra-bold :inherit markdown-header-face))
 
         ;; -- ;; (remove-hook 'prog-mode-hook 'auto-complete-mode)
         ;; -- ;; (remove-hook 'prog-mode-hook 'rainbow-delimiters-mode)
@@ -694,6 +708,13 @@ Dedicated (locked) windows are left untouched."
       ;; :desc "" "upd"  #'lsp-ui-peek-find-definitions
       )
 
+;;   (map! :map lsp-mode-map
+;;         :leader
+;;         (:prefix ("e" . "errors"))
+;;         :desc "Next Error"          "en"  #'flycheck-next-error
+;;         :desc "Previous Error"      "ep"  #'flycheck-previous-error
+;;         )
+
 (evil-define-key 'normal lsp-mode-map
   (kbd "M-.") 'lsp-find-definition
   )
@@ -712,7 +733,7 @@ Dedicated (locked) windows are left untouched."
 ;; Keybindings:1 ends here
 
 ;; [[file:../config.org::*Keybindings][Keybindings:1]]
-(after! flycheck-mode!
+(after! flycheck
   (map! :map flycheck-mode-map
         :leader
         :desc "Next Error"      "en"   #'flycheck-next-error

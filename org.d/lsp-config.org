@@ -129,6 +129,13 @@
       ;; :desc "" "upd"  #'lsp-ui-peek-find-definitions
       )
 
+;;   (map! :map lsp-mode-map
+;;         :leader
+;;         (:prefix ("e" . "errors"))
+;;         :desc "Next Error"          "en"  #'flycheck-next-error
+;;         :desc "Previous Error"      "ep"  #'flycheck-previous-error
+;;         )
+
 (evil-define-key 'normal lsp-mode-map
   (kbd "M-.") 'lsp-find-definition
   )

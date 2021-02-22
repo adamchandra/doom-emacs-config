@@ -46,6 +46,7 @@
       :desc "Search for symbol in project"  "/"    #'+default/search-project-for-symbol-at-point
       :desc "Search project"                "*"    #'+default/search-project
       :desc "Previous Buffer"               "TAB"  #'spacemacs/alternate-buffer
+      :desc "Comment/Uncomment"             "cl"   #'evilnc-comment-or-uncomment-lines
       )
 
 (map! ;;

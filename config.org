@@ -74,6 +74,17 @@ This file shouldn't be byte compiled.
 ;; disable evil-escape jk
 (package! evil-escape :disable t)
 
+
+;;; Scala packages
+(package! scala-mode)
+(package! sbt-mode)
+(package! lsp-metals)
+(package! lsp-ui)
+(package! company-lsp)
+(package! posframe)
+;; (package! dapmode)
+(package! yasnippet)
+
 #+end_src
 
 #+INCLUDE: "./org.d/lsp-config.org::*Packages"
@@ -100,12 +111,10 @@ This file shouldn't be byte compiled.
 #+end_src
 
 
-
 ** Assorted functions
 #+INCLUDE: "./org.d/misc-funcs.org"
 
 ** Lang
-#+INCLUDE: "./org.d/scala-config.org"
 #+INCLUDE: "./org.d/lsp-config.org::*Config"
 #+INCLUDE: "./org.d/org-config.org::*Config"
 
@@ -118,9 +127,8 @@ This file shouldn't be byte compiled.
 ** Run Final Config
 #+begin_src emacs-lisp
 
-(load-file
- (expand-file-name "./org.d/ts-tide-config.el" doom-private-dir)
- )
+(load-file (expand-file-name "./org.d/scala-config.el" doom-private-dir))
+(load-file (expand-file-name "./org.d/ts-tide-config.el" doom-private-dir))
 
 (adamchandra/final-config)
 

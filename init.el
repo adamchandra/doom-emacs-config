@@ -81,7 +81,7 @@
         +gnuplot
         )
        (python +lsp +pyright)
-       (scala +lsp)
+       ;; (scala +lsp)
        scheme
        sh
        web

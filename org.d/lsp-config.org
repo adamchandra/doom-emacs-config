@@ -42,7 +42,6 @@
    ;; lsp-disabled-clients '(eslint)
    ;; lsp-treemacs-sync-mode 1
    )
-  (message "after lsp/prefer-capf")
 
   (setq lsp-ui-sideline-enable t                ;;   "Whether or not to enable ‘lsp-ui-sideline’."
         ;; lsp-ui-sideline-ignore-duplicate nil    ;;   "Control to ignore duplicates when there is a same symbol with the same contents."
@@ -95,7 +94,8 @@
 (map! :map lsp-mode-map
       :localleader
       (:prefix ("e" . "errors"))
-      :desc "Error List"                                  "ee"  #'lsp-ui-flycheck-list
+      :desc "Error List"                                  "el"  #'lsp-ui-flycheck-list
+      :desc "Error Tree"                                  "ee"  #'lsp-treemacs-errors-list
 
       (:prefix ("g" . "Goto"))
       :desc "Goto declarations of symbol under point"     "gd"  #'lsp-find-declaration

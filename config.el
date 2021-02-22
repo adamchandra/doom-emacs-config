@@ -380,63 +380,6 @@ the current layouts buffers."
   )
 ;; Spacemacs Copypasta:3 ends here
 
-;; [[file:../config.org::*Scala Config][Scala Config:1]]
-;; LSP :: You can configure this warning with the `lsp-enable-file-watchers' and `lsp-file-watch-threshold' variables
-
-;; (defcustom lsp-file-watch-ignored-directories
-(after! scala-mode
-  (progn
-    (message "running custom config-scala-mode")
-
-    ;; (add-hook 'scala-mode-hook 'turn-on-auto-revert-mode)
-
-    ;; When a buffer is reverted, a message is generated.  This can be
-    ;; suppressed by setting ‘auto-revert-verbose’ to nil.
-
-    ;; Use ‘global-auto-revert-mode’ to automatically revert all buffers.
-    ;; Use ‘auto-revert-tail-mode’ if you know that the file will only grow
-    ;; without being changed in the part that is already in the buffer.
-
-    ;; Automatically insert asterisk in a comment when enabled
-    (defun scala/newline-and-indent-with-asterisk ()
-      (interactive)
-      (newline-and-indent)
-      (when scala-auto-insert-asterisk-in-comments
-        (scala-indent:insert-asterisk-on-multiline-comment)))
-
-    (evil-define-key 'insert scala-mode-map
-      (kbd "RET") 'scala/newline-and-indent-with-asterisk)
-
-    ;; ;;(evil-define-key 'normal scala-mode-map "J" 'spacemacs/scala-join-line)
-
-
-    ;; --"md"  'lsp-metals-doctor-run       ;; Execute Doctor
-    ;; --"mt"  'lsp-metals-treeview         ;; Switch to treeview
-    ;; --"mbi" 'lsp-metals-build-import  ;; Unconditionally run `sbt bloopInstall` and re-connect to the build server."
-    ;; --"mbc" 'lsp-metals-build-connect ;; Unconditionally cancel existing build server connection and re-connect."
-    ;; --"mbs" 'lsp-metals-bsp-switch  ;; Interactively switch between BSP servers.
-    ;; --"mss" 'lsp-metals-sources-scan  ;; Walk all files in the workspace and index where symbols are defined."
-    ;; --"mrc" 'lsp-metals-reset-choice  ;; Reset a decision you made about different settings. E.g. If you choose to import workspace with sbt you can decide to reset and change it again."
-
-    (setq scala-indent:step 2
-          scala-indent:indent-value-expression nil
-          scala-indent:align-parameters nil
-          scala-indent:align-forms t
-
-          ;; defconst scala-indent:eager-strategy 0
-          ;; defconst scala-indent:operator-strategy 1
-          ;; defconst scala-indent:reluctant-strategy 2
-          scala-indent:default-run-on-strategy scala-indent:operator-strategy
-
-          scala-indent:add-space-for-scaladoc-asterisk t
-          scala-indent:use-javadoc-style nil
-          )
-
-
-    )
-  )
-;; Scala Config:1 ends here
-
 ;; [[file:../config.org::*Config][Config:1]]
 (use-package! lsp-mode
   :hook ((
@@ -468,7 +411,6 @@ the current layouts buffers."
    ;; lsp-disabled-clients '(eslint)
    ;; lsp-treemacs-sync-mode 1
    )
-  (message "after lsp/prefer-capf")
 
   (setq lsp-ui-sideline-enable t                ;;   "Whether or not to enable ‘lsp-ui-sideline’."
         ;; lsp-ui-sideline-ignore-duplicate nil    ;;   "Control to ignore duplicates when there is a same symbol with the same contents."
@@ -654,6 +596,7 @@ Dedicated (locked) windows are left untouched."
       :desc "Search for symbol in project"  "/"    #'+default/search-project-for-symbol-at-point
       :desc "Search project"                "*"    #'+default/search-project
       :desc "Previous Buffer"               "TAB"  #'spacemacs/alternate-buffer
+      :desc "Comment/Uncomment"             "cl"   #'evilnc-comment-or-uncomment-lines
       )
 
 (map! ;;
@@ -674,7 +617,8 @@ Dedicated (locked) windows are left untouched."
 (map! :map lsp-mode-map
       :localleader
       (:prefix ("e" . "errors"))
-      :desc "Error List"                                  "ee"  #'lsp-ui-flycheck-list
+      :desc "Error List"                                  "el"  #'lsp-ui-flycheck-list
+      :desc "Error Tree"                                  "ee"  #'lsp-treemacs-errors-list
 
       (:prefix ("g" . "Goto"))
       :desc "Goto declarations of symbol under point"     "gd"  #'lsp-find-declaration
@@ -743,9 +687,8 @@ Dedicated (locked) windows are left untouched."
 ;; Keybindings:1 ends here
 
 ;; [[file:../config.org::*Run Final Config][Run Final Config:1]]
-(load-file
- (expand-file-name "./org.d/ts-tide-config.el" doom-private-dir)
- )
+(load-file (expand-file-name "./org.d/scala-config.el" doom-private-dir))
+(load-file (expand-file-name "./org.d/ts-tide-config.el" doom-private-dir))
 
 (adamchandra/final-config)
 ;; Run Final Config:1 ends here

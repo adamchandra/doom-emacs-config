@@ -1,5 +1,4 @@
 ;;;  -*- lexical-binding: t; -*-
-;; (projectile-project-root)
 
 (defun setup-org-notetaking (notes-root-dir)
   (interactive (list (projectile-project-root)))

@@ -407,7 +407,7 @@ the current layouts buffers."
 
   (setq
    lsp-prefer-capf t
-   ;; ;; lsp-log-io t ; enable debug log - can be a huge performance hit
+   lsp-log-io nil ; enable debug log - can be a huge performance hit
    ;; lsp-disabled-clients '(eslint)
    ;; lsp-treemacs-sync-mode 1
    )
@@ -440,7 +440,7 @@ the current layouts buffers."
         lsp-ui-flycheck-list-position 'bottom ;;   "Position where `lsp-ui-flycheck-list' will show diagnostics for the whole workspace. (bottom|right)
         )
 
-  (setq lsp-ui-imenu-enable nil
+  (setq lsp-ui-imenu-enable t
         lsp-ui-imenu-kind-position 'top                 ;;   "Where to show the entries kind."
         lsp-ui-imenu-colors '("deep sky blue" "green3") ;;   "Color list to cycle through for entry groups."
         )
@@ -674,6 +674,10 @@ Dedicated (locked) windows are left untouched."
 ;; (evil-define-key 'normal tide-project-errors-mode-map
 ;;   (kbd "RET") 'tide-goto-error
 ;;   )
+(defun my/lsp-completion-at-point()
+  (interactive)
+  (lsp-completion-at-point)
+  )
 ;; Keybindings:1 ends here
 
 ;; [[file:../config.org::*Keybindings][Keybindings:1]]
@@ -686,11 +690,46 @@ Dedicated (locked) windows are left untouched."
   )
 ;; Keybindings:1 ends here
 
+;; [[file:../config.org::*Display Icons][Display Icons:1]]
+;; Given that modeline clips the right side, move the important stuff leftwards
+(after! doom-modeline
+  (doom-modeline-def-modeline 'main
+    '( workspace-name window-number modals matches buffer-info remote-host buffer-position word-count parrot selection-info checker)
+    '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info  major-mode process vcs buffer-encoding))
+
+  (setq
+   doom-modeline-icon t
+   doom-modeline-buffer-file-name-style 'relative-to-project
+   )
+  )
+;; Display Icons:1 ends here
+
 ;; [[file:../config.org::*Run Final Config][Run Final Config:1]]
 (load-file (expand-file-name "./org.d/scala-config.el" doom-private-dir))
 (load-file (expand-file-name "./org.d/ts-tide-config.el" doom-private-dir))
 
 (adamchandra/final-config)
+;; Indent
+
+;; Copied and modified from doom/modules/config/+evil-keybindings
+(map!
+ :m [tab] (cmds! (and (bound-and-true-p yas-minor-mode)
+                      (evil-visual-state-p)
+                      (or (eq evil-visual-selection 'line)
+                          (not (memq (char-after) (list ?\( ?\[ ?\{ ?\} ?\] ?\))))))
+                 #'yas-insert-snippet
+                 (and (featurep! :editor fold)
+                      (save-excursion (end-of-line) (invisible-p (point))))
+                 #'+fold/toggle
+                 ;; Fixes #4548: without this, this tab keybind overrides
+                 ;; mode-local ones for modes that don't have an evil
+                 ;; keybinding scheme or users who don't have :editor (evil
+                 ;; +everywhere) enabled.
+                 (doom-lookup-key [tab] (list (current-local-map)))
+                 it
+                 t #'indent-for-tab-command
+                 )
+ )
 ;; Run Final Config:1 ends here
 
 ;; [[file:../config.org::*Make company mode never include ispell][Make company mode never include ispell:1]]
@@ -699,11 +738,12 @@ Dedicated (locked) windows are left untouched."
 ;;; form
 
 (defun my/company-backend-setup ()
-  ;; (make-local-variable 'company-backends)
-  (message "running my/company-backend-setup")
+  (interactive)
+  ;; (message "running my/company-backend-setup")
+  (make-local-variable 'company-backends)
   (setq company-backends
         '(company-capf
-          (:separate company-dabbrev company-dabbrev-code company-yasnippet)
+          ;; (:separate company-dabbrev company-dabbrev-code company-yasnippet)
           )
         )
   )
@@ -712,4 +752,12 @@ Dedicated (locked) windows are left untouched."
            :append
            #'my/company-backend-setup
            )
+(setq
+ ivy-use-virtual-buffers t
+ ivy-count-format ""
+ ;; no regexp by default
+ ivy-initial-inputs-alist nil
+ ;; allow input not in order
+ ivy-re-builders-alist '((t   . ivy--regex-ignore-order))
+ )
 ;; Make company mode never include ispell:1 ends here

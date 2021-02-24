@@ -1,5 +1,5 @@
 ;;; ../projects/the-livingroom/sys-config/emacs-configs/doom-emacs-config.doom.d/org.d/scala-config.el -*- lexical-binding: t; -*-
-;;;
+
 ;;;
 (after! projectile
   (add-to-list 'projectile-project-root-files "build.sbt"))
@@ -57,7 +57,7 @@
 
   ;; Add metals backend for lsp-mode
   (use-package lsp-metals
-    :config (setq lsp-metals-treeview-show-when-views-received t))
+    :config (setq lsp-metals-treeview-show-when-views-received nil))
 
   ;; Enable nice rendering of documentation on hover
   ;;   Warning: on some systems this package can reduce your emacs responsiveness significally.
@@ -69,27 +69,26 @@
   ;; lsp-mode supports snippets, but in order for them to work you need to use yasnippet
   ;; If you don't want to use snippets set lsp-enable-snippet to nil in your lsp-mode settings
   ;;   to avoid odd behavior with snippets and indentation
-  (use-package yasnippet)
+  ;; (use-package yasnippet)
 
   ;; Add company-lsp backend for metals.
   ;;   (depending on your lsp-mode version it may be outdated see:
   ;;    https://github.com/emacs-lsp/lsp-mode/pull/1983)
-  (use-package company-lsp)
+  ;; (use-package company-lsp)
 
   ;; Use the Debug Adapter Protocol for running tests and debugging
-  (use-package posframe
-    ;; Posframe is a pop-up tool that must be manually installed for dap-mode
-    )
-  (use-package dap-mode
-    :hook
-    (lsp-mode . dap-mode)
-    (lsp-mode . dap-ui-mode)
-    )
+  ;; (use-package posframe
+  ;;   ;; Posframe is a pop-up tool that must be manually installed for dap-mode
+  ;;   )
+  ;; (use-package dap-mode
+  ;;   :hook
+  ;;   (lsp-mode . dap-mode)
+  ;;   (lsp-mode . dap-ui-mode)
+  ;;   )
 
   ;; LSP :: You can configure this warning with the `lsp-enable-file-watchers' and `lsp-file-watch-threshold' variables
 
   ;; (defcustom lsp-file-watch-ignored-directories
-  (message "running custom config-scala-mode")
 
   ;; (add-hook 'scala-mode-hook 'turn-on-auto-revert-mode)
 
@@ -108,7 +107,10 @@
       (scala-indent:insert-asterisk-on-multiline-comment)))
 
   (evil-define-key 'insert scala-mode-map
-		   (kbd "RET") 'scala/newline-and-indent-with-asterisk)
+    (kbd "RET") 'scala/newline-and-indent-with-asterisk)
+
+  (evil-define-key 'insert scala-mode-map
+    (kbd "C-.") 'complete-symbol)
 
   ;; ;;(evil-define-key 'normal scala-mode-map "J" 'spacemacs/scala-join-line)
 
@@ -122,18 +124,18 @@
   ;; --"mrc" 'lsp-metals-reset-choice  ;; Reset a decision you made about different settings. E.g. If you choose to import workspace with sbt you can decide to reset and change it again."
 
   (setq scala-indent:step 2
-	scala-indent:indent-value-expression nil
-	scala-indent:align-parameters nil
-	scala-indent:align-forms t
+        scala-indent:indent-value-expression nil
+        scala-indent:align-parameters nil
+        scala-indent:align-forms t
 
-	;; defconst scala-indent:eager-strategy 0
-	;; defconst scala-indent:operator-strategy 1
-	;; defconst scala-indent:reluctant-strategy 2
-	scala-indent:default-run-on-strategy scala-indent:operator-strategy
+        ;; defconst scala-indent:eager-strategy 0
+        ;; defconst scala-indent:operator-strategy 1
+        ;; defconst scala-indent:reluctant-strategy 2
+        scala-indent:default-run-on-strategy scala-indent:operator-strategy
 
-	scala-indent:add-space-for-scaladoc-asterisk t
-	scala-indent:use-javadoc-style nil
-	)
+        scala-indent:add-space-for-scaladoc-asterisk t
+        scala-indent:use-javadoc-style nil
+        )
 
 
   )

@@ -124,6 +124,33 @@ This file shouldn't be byte compiled.
 #+INCLUDE: "./org.d/lsp-config.org::*Keybindings"
 #+INCLUDE: "./org.d/flycheck-config.org::*Keybindings"
 
+
+** Modeline Config
+?? Modeline is cutting off right side icons
+
+*** Modeline definitions are here:
+doom-core/.local/straight/repos/doom-modeline/doom-modeline.el
+doom-core/.local/straight/repos/doom-modeline/doom-modeline-core.el
+
+*** Display Icons
+(all-the-icons-insert-icons-for 'octicon 0.8) ;; icons + scaling factor
+(all-the-icons-insert-icons-for 'faicon 0.8)
+
+#+begin_src emacs-lisp
+
+;; Given that modeline clips the right side, move the important stuff leftwards
+(after! doom-modeline
+  (doom-modeline-def-modeline 'main
+    '( workspace-name window-number modals matches buffer-info remote-host buffer-position word-count parrot selection-info checker)
+    '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info  major-mode process vcs buffer-encoding))
+
+  (setq
+   doom-modeline-icon t
+   doom-modeline-buffer-file-name-style 'relative-to-project
+   )
+  )
+
+#+end_src
 ** Run Final Config
 #+begin_src emacs-lisp
 
@@ -131,6 +158,27 @@ This file shouldn't be byte compiled.
 (load-file (expand-file-name "./org.d/ts-tide-config.el" doom-private-dir))
 
 (adamchandra/final-config)
+;; Indent
+
+;; Copied and modified from doom/modules/config/+evil-keybindings
+(map!
+ :m [tab] (cmds! (and (bound-and-true-p yas-minor-mode)
+                      (evil-visual-state-p)
+                      (or (eq evil-visual-selection 'line)
+                          (not (memq (char-after) (list ?\( ?\[ ?\{ ?\} ?\] ?\))))))
+                 #'yas-insert-snippet
+                 (and (featurep! :editor fold)
+                      (save-excursion (end-of-line) (invisible-p (point))))
+                 #'+fold/toggle
+                 ;; Fixes #4548: without this, this tab keybind overrides
+                 ;; mode-local ones for modes that don't have an evil
+                 ;; keybinding scheme or users who don't have :editor (evil
+                 ;; +everywhere) enabled.
+                 (doom-lookup-key [tab] (list (current-local-map)))
+                 it
+                 t #'indent-for-tab-command
+                 )
+ )
 
 #+end_src
 
@@ -141,11 +189,12 @@ This file shouldn't be byte compiled.
 ;;; form
 
 (defun my/company-backend-setup ()
-  ;; (make-local-variable 'company-backends)
-  (message "running my/company-backend-setup")
+  (interactive)
+  ;; (message "running my/company-backend-setup")
+  (make-local-variable 'company-backends)
   (setq company-backends
         '(company-capf
-          (:separate company-dabbrev company-dabbrev-code company-yasnippet)
+          ;; (:separate company-dabbrev company-dabbrev-code company-yasnippet)
           )
         )
   )
@@ -154,4 +203,13 @@ This file shouldn't be byte compiled.
            :append
            #'my/company-backend-setup
            )
-#+end_src
+(setq
+ ivy-use-virtual-buffers t
+ ivy-count-format ""
+ ;; no regexp by default
+ ivy-initial-inputs-alist nil
+ ;; allow input not in order
+ ivy-re-builders-alist '((t   . ivy--regex-ignore-order))
+ )
+
+           #+end_src

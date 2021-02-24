@@ -5,12 +5,17 @@
 ** Keybindings
 #+begin_src emacs-lisp
 
+
 (after! flycheck
   (map! :map flycheck-mode-map
         :leader
         :desc "Next Error"      "en"   #'flycheck-next-error
         :desc "Previous Error"  "ep"   #'flycheck-previous-error
         )
+
+  (setq flycheck-indication-mode 'left-fringe)
+  (fringe-mode '(14 . 8))
+
   )
 
 

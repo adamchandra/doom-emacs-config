@@ -681,12 +681,48 @@ Dedicated (locked) windows are left untouched."
 ;; Keybindings:1 ends here
 
 ;; [[file:../config.org::*Keybindings][Keybindings:1]]
+(fringe-mode '(12 . 8))
+
 (after! flycheck
   (map! :map flycheck-mode-map
         :leader
         :desc "Next Error"      "en"   #'flycheck-next-error
         :desc "Previous Error"  "ep"   #'flycheck-previous-error
         )
+
+  (setq flycheck-indication-mode 'left-fringe)
+
+  ;; (setq visual-line-fringe-indicators '(left-curly-arrow nil))
+
+  ;; (define-fringe-bitmap 'flycheck-fringe-bitmap-ball
+  ;;   (vector #b00000000
+  ;;           #b00000000
+  ;;           #b00000000
+  ;;           #b00000000
+  ;;           #b00000000
+  ;;           #b00111000
+  ;;           #b01111100
+  ;;           #b11111110
+  ;;           #b11111110
+  ;;           #b01111100
+  ;;           #b00111000
+  ;;           #b00000000
+  ;;           #b00000000
+  ;;           #b00000000
+  ;;           #b00000000
+  ;;           #b00000000
+  ;;           #b00000000
+  ;;           )
+  ;;   )
+
+  ;; (flycheck-define-error-level 'error
+  ;;   :severity 100
+  ;;   :compilation-level 2
+  ;;   :overlay-category 'flycheck-error-overlay
+  ;;   :fringe-bitmap 'flycheck-fringe-bitmap-ball
+  ;;   :fringe-face 'flycheck-fringe-error
+  ;;   :error-list-face 'flycheck-error-list-error)
+
   )
 ;; Keybindings:1 ends here
 
